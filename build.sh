@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
+REPO_DIR=`pwd`
+
 echo "making build dir"
-mkdir -p build && cd build
+mkdir -p /tmp/build-nginx && cd /tmp/build-nginx
 
 # dependencies
 echo "getting lua nginx module"
@@ -18,6 +20,14 @@ LUA_MODULE=`pwd`/lua-nginx-module
 cd nginx-1.7.10/
 ./configure --prefix=/opt/nginx \
 	--add-module=${DEVEL_MODULE} \
-	--add-module=${LUA_MODULE}
+	--add-module=${LUA_MODULE} > /dev/null
 
-make -j
+make -j > /dev/null
+sudo make install > /dev/null
+
+cd $REPO_DIR
+
+echo "moving config files"
+sudo cp ./example/cas.conf /opt/nginx/conf/nginx.conf
+sudo cp ./src/cas*.lua /opt/nginx/
+

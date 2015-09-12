@@ -1,6 +1,5 @@
 local handlers = require('cas_handlers')
 
-
 -- per request variables
 local cookie = ngx.var.cookie_JSESSIONID
 local token = ngx.var.arg_token

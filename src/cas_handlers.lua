@@ -1,6 +1,8 @@
+local os = require("os")
+
 function first_access()
-  ngx.req.set_uri_args("service=" .. ngx.var.CAS_SERVICEREG)
-  return ngx.redirect(ngx.var.CAS_HOSTNAME, ngx.HTTP_MOVED_TEMPORARILY)
+  ngx.req.set_uri_args("service=" .. os.getenv(CAS_SERVICEREG))
+  return ngx.redirect(os.getenv("CAS_HOSTNAME"), ngx.HTTP_MOVED_TEMPORARILY)
 end
 
 function validate_with_CAS(token)

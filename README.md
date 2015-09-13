@@ -15,7 +15,7 @@ Instead, you can have one virtual server protecting many apps, with minimal inte
 overhead.
 
 # TODO
-* ![lua-resty-cookie](https://github.com/cloudflare/lua-resty-cookie) provides cookie.lua.
+* [lua-resty-cookie](https://github.com/cloudflare/lua-resty-cookie) provides cookie.lua.
   Make the build script import this and then move the cookie.lua to /opt/nginx.
 * UUID generator for generating random cookies
 * Package application like lua-resty-cookie, with just lua files and no build script. Build

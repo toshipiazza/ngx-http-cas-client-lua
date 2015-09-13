@@ -27,4 +27,4 @@ sudo make install > /dev/null
 
 # resty is a lua-only library
 cd /tmp/build-nginx
-sudo mv ./lua-resty-cookie/lib/resty/cookie.lua /opt/nginx
+sudo cp ./lua-resty-cookie/lib/resty/cookie.lua /opt/nginx

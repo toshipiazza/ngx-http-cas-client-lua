@@ -1,6 +1,9 @@
+local ck = require('cookie')
+
 function first_access()
-  ngx.req.set_uri_args("service=" .. ngx.var.CAS_SERVICEREG)
-  return ngx.redirect(ngx.var.CAS_HOSTNAME, ngx.HTTP_MOVED_TEMPORARILY)
+  return ngx.redirect(
+    ngx.var.CAS_HOSTNAME .. "?service=" .. ngx.var.CAS_SERVICEREG,
+    ngx.HTTP_MOVED_TEMPORARILY)
 end
 
 function validate_with_CAS(token)
@@ -10,14 +13,14 @@ function validate_with_CAS(token)
 
   -- did the response from CAS have the string "success" in it?
   if string.find(res.body, "success") then
-    local ck = require('cookie')
     local cookie = ck:new()
-
     cookie:set({
       key="JSESSIONID",
       value="asdasd"
     })
-    ngx.shared.cookie_store:set("asdasd", true)
+    ngx.shared.cookie_store:set("asdasd", true,
+      (ngx.var.COOKIE_EXPIRY or 3600))
+    -- TODO: strip service query param
   else
     return first_access()
   end

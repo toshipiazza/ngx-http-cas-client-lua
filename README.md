@@ -15,10 +15,14 @@ shiro plugin for CAS integration, and other platforms are generally the same in 
 with minimal integration overhead.
 
 # TODO
-* Generator for generating random cookies (remaining thing on list for full CAS support)
+* Generator for generating random cookies (needed for full CAS support)
+* Strip service header when ticket is validated against CAS.
+* What happens on collisions in ngx.shared.DICT for cookie\_store
+* What happens when ngx.shared.DICT runs out of memory? What do we do?
 * Tests!!!!!
 * Package application like lua-resty-cookie, with just lua files and no build script. Build
   script link may be put in the README or on a wiki.
+* Determine performance degredation over long scale tests ( > 1 hour)
 
 # Limitations
 * For now, a CAS uri must exist within the nginx.conf, even if it's just a proxy-pass to the
@@ -35,6 +39,7 @@ with minimal integration overhead.
     location /client {
       set $CAS_SERVICEREG "https://localhost/client";
       set $CAS_HOSTNAME   "/CAS";
+      set $COOKIE_EXPIRY 7200; # defaults to 3600s=1 hour
 
       lua_need_request_body on;
       access_by_lua_file cas.lua;

@@ -18,9 +18,11 @@ with minimal integration overhead.
 ### Needed for full CAS support
 * Generator for generating random cookies.
 * Strip service header when ticket is validated against CAS.
+
 ### Corner Cases
 * What should happen on collision in ngx.shared.DICT for cookie\_store
 * What should happen when ngx.shared.DICT runs out of memory? What do we do?
+
 ### Misc
 * Tests!!!!!
 * Package application like lua-resty-cookie, with just lua files and no build script. Build

@@ -14,12 +14,13 @@ function validate_with_CAS(token)
   -- did the response from CAS have the string "success" in it?
   if string.find(res.body, "success") then
     local cookie = ck:new()
+    local max_age = (ngx.var.COOKIE_EXPIRY or 3600)
     cookie:set({
       key="JSESSIONID",
-      value="asdasd"
+      value="asdasd",
+      max_age=max_age
     })
-    ngx.shared.cookie_store:set("asdasd", true,
-      (ngx.var.COOKIE_EXPIRY or 3600))
+    ngx.shared.cookie_store:set("asdasd", true, max_age)
     -- TODO: strip service query param
   else
     return first_access()

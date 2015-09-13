@@ -1,5 +1,7 @@
 # ngx-http-cas-client-lua
 
+### WARNING, this project is not yet finished
+
 This is a cas client written entirely using nginx's lua module. The idea is that you will
 protect an nginx location by way of CAS authentication. By providing a CAS endpoint (which
 for now must have a corresponding entry in nginx, see limitations section), you will be able

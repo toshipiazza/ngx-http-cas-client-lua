@@ -4,7 +4,7 @@ function first_access()
 end
 
 function validate_with_CAS(token)
-  local res = ngx.location.capture(ngx.var.CAS_HOSTNAME .. "/validateService",
+  local res = ngx.location.capture(ngx.var.CAS_HOSTNAME .. "/serviceValidate",
     { args = { serviceToken = token} })
 
   if string.find(res.body, "success") then

@@ -4,9 +4,11 @@ function first_access()
 end
 
 function validate_with_CAS(token)
+  -- send a subrequest to CAS/serviceValidate w/ the serviceToken
   local res = ngx.location.capture(ngx.var.CAS_HOSTNAME .. "/serviceValidate",
     { args = { serviceToken = token} })
 
+  -- did the response from CAS have the string "success" in it?
   if string.find(res.body, "success") then
     local ck = require('cookie')
     local cookie = ck:new()
@@ -16,19 +18,16 @@ function validate_with_CAS(token)
       value="asdasd"
     })
     ngx.shared.cookie_store:set("asdasd", true)
-    return -- we're good
+  else
+    return first_access()
   end
-
-  -- we redirect back to CAS
-  return first_access()
 end
 
 function validate_cookie(cookie)
-  if (ngx.shared.cookie_store:get(cookie) ~= nil) then
-    return
+  -- does the cookie exist in our store?
+  if ngx.shared.cookie_store:get(cookie) == nil then
+    return first_access()
   end
-
-  return first_access()
 end
 
 return {

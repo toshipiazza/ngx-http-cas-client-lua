@@ -6,7 +6,7 @@ local token = ngx.var.arg_token
 
 if cookie ~= nil then
   -- cookie, no token
-  -- TODO: cookie store?
+  return handlers.validate_cookie(cookie)
 elseif token ~= nil then
   return handlers.validate_with_CAS(token)
 else

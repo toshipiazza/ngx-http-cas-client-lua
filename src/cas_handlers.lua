@@ -1,6 +1,7 @@
 local ck = require('cookie')
 
 function first_access()
+  -- CAS_HOSTNAME and CAS_SERVICEREG are both trusted
   return ngx.redirect(
     ngx.var.CAS_HOSTNAME .. "?service=" .. ngx.var.CAS_SERVICEREG,
     ngx.HTTP_MOVED_TEMPORARILY)
@@ -15,12 +16,25 @@ function validate_with_CAS(token)
   if string.find(res.body, "success") then
     local cookie = ck:new()
     local max_age = (ngx.var.COOKIE_EXPIRY or 3600)
+    local cookie_val = "asdasd" -- TODO: randomly generated
+
+    -- place cookie into cookie store
+    local ok, err = ngx.shared.cookie_store:safe_add(
+      cookie_val, true, max_age)
+    if ok == nil and err == "no memory" then
+      ngx.log(ngx.EMERG, "Cookie store is out of memory")
+      return first_access()
+    elseif ok == nil and err == "exists" then
+      -- TODO: what to do about duplicate
+    end
+
+    -- if that was okay, then place cookie into the browser
     cookie:set({
       key="JSESSIONID",
-      value="asdasd",
+      value=cookie_val,
       max_age=max_age
     })
-    ngx.shared.cookie_store:set("asdasd", true, max_age)
+
     -- TODO: strip service query param
   else
     return first_access()

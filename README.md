@@ -19,6 +19,8 @@ many apps, with minimal integration overhead.
 ### Needed for full CAS support
 * Generator for generating random cookies.
 * Strip service header when ticket is validated against CAS.
+* (future proposal) Support proxy tickets, wean off of the /validate (CAS 1.0) endpoint
+  and use the /{service,proxy}Validate endpoints
 
 ### Corner Cases
 * What should happen on collision in ngx.shared.DICT for cookie\_store?
@@ -34,15 +36,12 @@ many apps, with minimal integration overhead.
 
 # Limitations
 * For now, a CAS uri must exist within the nginx.conf, even if it's just a proxy-pass to the
-  real server.
+  real server. This necessarily means that the CAS server is accessible on the same hostname,
+  though not necessarily accessible to the public.
   ```
-  # These two endpoints must exist, or at the very least /CAS
-  # must proxy_pass to a valid CAS server!
+  # This endpoint must exist, optimally a proxy pass to the actual server
   location /CAS {
     ...
-    location /CAS/serviceValidate {
-      ...
-    }
   }
 
   location /client {
@@ -56,7 +55,7 @@ many apps, with minimal integration overhead.
     ...
   }
   ```
-* The CAS protocol only returns an XML file that says "success" or not. Traditionally a
-  separate database is used for the idea of permissions. This module does not (yet) pass
-  the XML file data to the application. Be a good user for now and use a separate database
-  for permissions, etc.
+* The CAS protocol only returns a "yes" or a "no". Traditionally a separate database is used
+  for the idea of permissions. This module does not (yet) pass any XML file data to the
+  application as if we used the /serviceValidate endpoint. Be a good user for now and use
+  a separate database for permissions, etc.

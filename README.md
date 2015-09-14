@@ -14,6 +14,12 @@ import a shiro plugin for CAS integration, and other platforms are generally the
 this respect (Django CAS, node CAS). Instead, you can have one virtual server protecting
 many apps, with minimal integration overhead.
 
+# To Build
+
+[ngx\_openresty](https://github.com/openresty/ngx_openresty) seems to be the de facto 
+standard in lua based nginx processing, so use it. It comes built in with a lot of
+functionality (and separate modules, like ssl support) which are necessary anyway.
+
 # TODO
 
 ### Needed for full CAS support
@@ -40,7 +46,7 @@ many apps, with minimal integration overhead.
   though not necessarily accessible to the public.
   ```
   # This endpoint must exist, optimally a proxy pass to the actual server
-  location /CAS {
+  location /cas {
     ...
   }
 

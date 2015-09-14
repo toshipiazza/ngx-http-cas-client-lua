@@ -2,12 +2,12 @@ local handlers = require('cas_handlers')
 
 -- per request variables
 local cookie = ngx.var.cookie_JSESSIONID
-local token = ngx.var.arg_token
+local token = ngx.var.arg_ticket
 
 if cookie ~= nil then
   return handlers.validate_cookie(cookie)
 elseif token ~= nil then
-  return handlers.validate_with_CAS(token)
+  return handlers.validate_with_CAS(ticket)
 else
   return handlers.first_access()
 end

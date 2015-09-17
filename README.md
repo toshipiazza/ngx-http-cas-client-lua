@@ -16,9 +16,11 @@ many apps, with minimal integration overhead.
 
 # To Build
 
-[ngx\_openresty](https://github.com/openresty/ngx_openresty) seems to be the de facto
+* [ngx\_openresty](https://github.com/openresty/ngx_openresty) seems to be the de facto
 standard in lua based nginx processing, so use it. It comes built in with a lot of
 functionality (and separate modules, like ssl support) which are necessary anyway.
+* Also depends on [lua\_resty\_cookie](https://github.com/cloudflare/lua-resty-cookie) for
+  cookie.lua
 
 # TODO
 

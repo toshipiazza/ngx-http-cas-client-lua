@@ -17,27 +17,23 @@ many apps, with minimal integration overhead.
 # To Build
 
 * [ngx\_openresty](https://github.com/openresty/ngx_openresty) seems to be the de facto
-standard in lua based nginx processing, so use it. It comes built in with a lot of
-functionality (and separate modules, like ssl support) which are necessary anyway.
+  standard in lua based nginx processing, so use it. It comes built in with a lot of
+  functionality (and separate modules, like ssl support) which are necessary anyway.
 * Also depends on [lua\_resty\_cookie](https://github.com/cloudflare/lua-resty-cookie) for
-  cookie.lua
+  cookie.lua, and [lua\_resty\_string](https://github.com/openresty/lua-resty-string) for
+  random.lua and string.lua
 
 # TODO
 
 ### Needed for full CAS support
-* Generator for generating random cookies.
 * On CAS Logout, clear cookie store in nginx. (create post endpoint at base???)
 * Strip service header when ticket is validated against CAS. (not necessary)
 * (future proposal) Support proxy tickets, wean off of the /validate (CAS 1.0) endpoint
   and use the /{service,proxy}Validate endpoints
 
-### Corner Cases
-* What should happen on collision in ngx.shared.DICT for cookie\_store?
-* What should happen when ngx.shared.DICT runs out of memory? What do we do?
-  - currently we just write to a log file and fail silently
-* COOKIE\_EXPIRY should only be set once per server. We should enforce this.
-
 ### Misc
+* Migrate API to using arguments to lua for better granularity on cookie store
+* COOKIE\_EXPIRY should only be set once per server. We should enforce this.
 * Unit/Acceptance Tests!!!!!
 * Determine performance degredation over long scale tests ( > 1 hour)
 

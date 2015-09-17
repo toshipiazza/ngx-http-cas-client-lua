@@ -5,13 +5,13 @@ function first_access()
     ngx.HTTP_MOVED_TEMPORARILY)
 end
 
-function set_cookie_and_store(max_age, cookie_val)
-  local ck = require('cookie')
+function set_cookie_and_store(max_age, cookie_val, ticket_val)
+  local ck = require('resty.cookie')
   local cookie = ck:new()
 
   -- place cookie into cookie store
   local success, err, forcible = ngx.shared.cookie_store:add(
-    cookie_val, true, max_age)
+    cookie_val, ticket_val, max_age)
   if not success then
     if err == "no memory" then
       -- the add method will attempt to clear out all LRU entries
@@ -27,7 +27,7 @@ function set_cookie_and_store(max_age, cookie_val)
 
   -- if that was okay, then place cookie into the browser
   cookie:set({
-    key="JSESSIONID",
+    key="NGXCAS",
     value=cookie_val,
     max_age=max_age
   })
@@ -35,15 +35,16 @@ function set_cookie_and_store(max_age, cookie_val)
   return true
 end
 
--- TODO: return a UUID or something similar
--- because seeding with os.time... sucks!
-math.randomseed(os.time())
 function generate_cookie()
-  local cookie = "CK-"
-  for i=1,17 do
-    cookie = cookie .. tostring(math.random(i, 1000))
+  local resty_random = require('resty.random')
+  local str = require("resty.string")
+
+  local strong_random = resty_random.bytes(32, true)
+  while strong_random == nil do
+    strong_random = resty_random.bytes(32, true)
   end
-  return cookie
+
+  return "CK-" .. str.to_hex(strong_random)
 end
 
 function validate_with_CAS(ticket)
@@ -58,11 +59,10 @@ function validate_with_CAS(ticket)
     local cookie_val = generate_cookie()
 
     -- fails on low memory or on duplicate (for now)
-    if not set_cookie_and_store(max_age, cookie_val) then
+    if not set_cookie_and_store(max_age, cookie_val, ticket) then
       return first_access()
     end
 
-    -- TODO: strip service query param
   else
     return first_access()
   end

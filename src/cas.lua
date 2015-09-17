@@ -1,7 +1,7 @@
 local handlers = require('cas_handlers')
 
 -- per request variables
-local cookie = ngx.var.cookie_JSESSIONID
+local cookie = ngx.var.cookie_NGXCAS
 local ticket = ngx.var.arg_ticket
 
 if cookie ~= nil then

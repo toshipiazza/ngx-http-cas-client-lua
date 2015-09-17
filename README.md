@@ -16,7 +16,7 @@ many apps, with minimal integration overhead.
 
 # To Build
 
-[ngx\_openresty](https://github.com/openresty/ngx_openresty) seems to be the de facto 
+[ngx\_openresty](https://github.com/openresty/ngx_openresty) seems to be the de facto
 standard in lua based nginx processing, so use it. It comes built in with a lot of
 functionality (and separate modules, like ssl support) which are necessary anyway.
 
@@ -24,7 +24,7 @@ functionality (and separate modules, like ssl support) which are necessary anywa
 
 ### Needed for full CAS support
 * Generator for generating random cookies.
-* Strip service header when ticket is validated against CAS.
+* Strip service header when ticket is validated against CAS. (not necessary)
 * (future proposal) Support proxy tickets, wean off of the /validate (CAS 1.0) endpoint
   and use the /{service,proxy}Validate endpoints
 
@@ -36,8 +36,6 @@ functionality (and separate modules, like ssl support) which are necessary anywa
 
 ### Misc
 * Unit/Acceptance Tests!!!!!
-* Package application like lua-resty-cookie, with just lua files and no build script. Build
-  script link may be put in the README or on a wiki.
 * Determine performance degredation over long scale tests ( > 1 hour)
 
 # Limitations

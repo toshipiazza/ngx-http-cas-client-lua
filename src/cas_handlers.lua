@@ -1,7 +1,7 @@
 function first_access()
-  -- CAS_HOSTNAME and CAS_SERVICEREG are both trusted
+  -- CAS_URI and CAS_SERVICEREG are both trusted
   return ngx.redirect(
-    ngx.var.CAS_HOSTNAME .. "/login?service=" .. ngx.var.CAS_SERVICEREG,
+    ngx.var.CAS_URI .. "/login?service=" .. ngx.var.CAS_SERVICEREG,
     ngx.HTTP_MOVED_TEMPORARILY)
 end
 
@@ -37,8 +37,8 @@ end
 
 function validate_with_CAS(ticket)
   -- send a subrequest to CAS/validate w/ the ticket
-  local res = ngx.location.capture(ngx.var.CAS_HOSTNAME .. "/validate",
-    { args = { ticket = ticket, service = ngx.var.CAS_SERVICEREG} })
+  local res = ngx.location.capture(ngx.var.CAS_URI .. "/validate",
+    { args = { ticket = ticket, service = ngx.var.CAS_SERVICEREG } })
 
   -- did the response from CAS have the string "yes" in it?
   if res.status == ngx.HTTP_OK and

@@ -35,6 +35,17 @@ function set_cookie_and_store(max_age, cookie_val)
   return true
 end
 
+-- TODO: return a UUID or something similar
+-- because seeding with os.time... sucks!
+math.randomseed(os.time())
+function generate_cookie()
+  local cookie = "CK-"
+  for i=1,17 do
+    cookie = cookie .. tostring(math.random(i, 1000))
+  end
+  return cookie
+end
+
 function validate_with_CAS(ticket)
   -- send a subrequest to CAS/validate w/ the ticket
   local res = ngx.location.capture(ngx.var.CAS_URI .. "/validate",
@@ -44,7 +55,7 @@ function validate_with_CAS(ticket)
   if res.status == ngx.HTTP_OK and
      res.body ~= nil and string.find(res.body, "yes") then
     local max_age = (ngx.var.COOKIE_EXPIRY or 3600)
-    local cookie_val = "asdasd" -- TODO: randomly generated
+    local cookie_val = generate_cookie()
 
     -- fails on low memory or on duplicate (for now)
     if not set_cookie_and_store(max_age, cookie_val) then

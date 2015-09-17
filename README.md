@@ -26,6 +26,7 @@ functionality (and separate modules, like ssl support) which are necessary anywa
 
 ### Needed for full CAS support
 * Generator for generating random cookies.
+* On CAS Logout, clear cookie store in nginx. (create post endpoint at base???)
 * Strip service header when ticket is validated against CAS. (not necessary)
 * (future proposal) Support proxy tickets, wean off of the /validate (CAS 1.0) endpoint
   and use the /{service,proxy}Validate endpoints
@@ -33,8 +34,8 @@ functionality (and separate modules, like ssl support) which are necessary anywa
 ### Corner Cases
 * What should happen on collision in ngx.shared.DICT for cookie\_store?
 * What should happen when ngx.shared.DICT runs out of memory? What do we do?
-  - currently we just write to a log file and fail silently without tampering with any
-    other data.
+  - currently we just write to a log file and fail silently
+* COOKIE\_EXPIRY should only be set once per server. We should enforce this.
 
 ### Misc
 * Unit/Acceptance Tests!!!!!

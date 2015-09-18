@@ -32,7 +32,6 @@ many apps, with minimal integration overhead.
   and use the /{service,proxy}Validate endpoints
 
 ### Misc
-* Migrate API to using arguments to lua for better granularity on cookie store
 * COOKIE\_EXPIRY should only be set once per server. We should enforce this.
 * Unit/Acceptance Tests!!!!!
 * Determine performance degredation over long scale tests ( > 1 hour)

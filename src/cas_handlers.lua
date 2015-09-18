@@ -10,7 +10,7 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
   local cookie = ck:new()
 
   -- place cookie into cookie store
-  local success, err, forcible = ngx.shared.cookie_store:add(
+  local success, err, forcible = ngx.shared[ngx.var.COOKIE_STORE]:add(
     cookie_val, ticket_val, max_age)
   if not success then
     if err == "no memory" then
@@ -62,7 +62,6 @@ function validate_with_CAS(ticket)
     if not set_cookie_and_store(max_age, cookie_val, ticket) then
       return first_access()
     end
-
   else
     return first_access()
   end
@@ -70,7 +69,7 @@ end
 
 function validate_cookie(cookie)
   -- does the cookie exist in our store?
-  if ngx.shared.cookie_store:get(cookie) == nil then
+  if ngx.shared[ngx.var.COOKIE_STORE]:get(cookie) == nil then
     return first_access()
   end
 end

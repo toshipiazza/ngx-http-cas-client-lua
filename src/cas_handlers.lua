@@ -20,7 +20,8 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
       ngx.log(ngx.EMERG, "Cookie store is out of memory")
       return false
     elseif err == "exists" then
-      -- TODO: what to do about duplicate
+      -- we don't do anything, since this in itself has a very low
+      -- probability of occurring (the user just has to log in again)
       return false
     end
   end
@@ -74,8 +75,19 @@ function validate_cookie(cookie)
   end
 end
 
+function destroy_ticket(ticket)
+  -- loop through map until we find ticket
+  for k, v in pairs(ngx.shared[ngx.var.COOKIE_STORE]) do
+    if v == ticket then
+      ngx.shared[ngx.var.COOKIE_STORE]:delete(k)
+      break
+    end
+  end
+end
+
 return {
   first_access = first_access;
   validate_with_CAS = validate_with_CAS;
   validate_cookie = validate_cookie;
+  destroy_ticket = destroy_ticket;
 }

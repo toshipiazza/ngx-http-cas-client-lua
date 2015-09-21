@@ -1,4 +1,8 @@
+local ck = require('resty.cookie')
 local cookie_store = ngx.shared[ngx.var.COOKIE_STORE]
+local ticket_store = ngx.shared[ngx.var.TICKET_STORE]
+
+local cookie_name = "NGXCAS"
 
 function first_access()
   -- CAS_URI and CAS_SERVICEREG are both trusted
@@ -8,7 +12,6 @@ function first_access()
 end
 
 function set_cookie_and_store(max_age, cookie_val, ticket_val)
-  local ck = require('resty.cookie')
   local cookie = ck:new()
 
   -- place cookie into cookie store
@@ -28,9 +31,21 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
     end
   end
 
+  -- analagous for placement of tickets
+  local success, err, forcible = ticket_store:add(
+    ticket_val, cookie_val, max_age)
+  if not success then
+    if err == "no memory" then
+      ngx.log(ngx.EMERG, "Ticket store is out of memory")
+      return false
+    elseif err == "exists" then
+      return false
+    end
+  end
+
   -- if that was okay, then place cookie into the browser
   cookie:set({
-    key="NGXCAS",
+    key=cookie_name,
     value=cookie_val,
     max_age=max_age
   })
@@ -73,20 +88,25 @@ end
 function validate_cookie(cookie)
   -- does the cookie exist in our store?
   if cookie_store:get(cookie) == nil then
+    -- the cookie was probably destroyed
+    -- by us in SLO previously anyway, so
+    -- we expire it immediately
+    local cookie = ck:new()
+    cookie:set({
+      key=cookie_name,
+      value="",
+      max_age=-1
+    })
     return first_access()
   end
 end
 
 function destroy_ticket(ticket)
-  -- inefficient, but destroying sessions doesn't occur often
-  -- TODO: maybe use two maps (cookie_store, ticket_store)
-  local all_keys = cookie_store:get_keys(0)
-  for i, k in ipairs(all_keys) do
-    local _ticket, _ = cookie_store:get(k)
-    if _ticket == ticket then
-      cookie_store:delete(k)
-      break
-    end
+  -- destroys cookie and ticket for SLO
+  local assoc_cookie, _ = ticket_store:get(ticket)
+  if assoc_cookie ~= nil then
+    cookie_store:delete(assoc_cookie)
+    ticket_store:delete(ticket)
   end
 end
 

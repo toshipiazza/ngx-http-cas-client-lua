@@ -26,8 +26,8 @@ many apps, with minimal integration overhead.
 # TODO
 
 ### Needed for full CAS support
-* On CAS Logout, clear cookie store in nginx. (create post endpoint at base???)
-* Strip service header when ticket is validated against CAS. (not necessary)
+* Strip service header when ticket is validated against CAS. (for some reason does not work)
+  - non crucial and not necessary
 * (future proposal) Support proxy tickets, wean off of the /validate (CAS 1.0) endpoint
   and use the /{service,proxy}Validate endpoints
 

@@ -1,3 +1,5 @@
+local cookie_store = ngx.shared[ngx.var.COOKIE_STORE]
+
 function first_access()
   -- CAS_URI and CAS_SERVICEREG are both trusted
   return ngx.redirect(
@@ -10,7 +12,7 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
   local cookie = ck:new()
 
   -- place cookie into cookie store
-  local success, err, forcible = ngx.shared[ngx.var.COOKIE_STORE]:add(
+  local success, err, forcible = cookie_store:add(
     cookie_val, ticket_val, max_age)
   if not success then
     if err == "no memory" then
@@ -70,16 +72,19 @@ end
 
 function validate_cookie(cookie)
   -- does the cookie exist in our store?
-  if ngx.shared[ngx.var.COOKIE_STORE]:get(cookie) == nil then
+  if cookie_store:get(cookie) == nil then
     return first_access()
   end
 end
 
 function destroy_ticket(ticket)
-  -- loop through map until we find ticket
-  for k, v in pairs(ngx.shared[ngx.var.COOKIE_STORE]) do
-    if v == ticket then
-      ngx.shared[ngx.var.COOKIE_STORE]:delete(k)
+  -- inefficient, but destroying sessions doesn't occur often
+  -- TODO: maybe use two maps (cookie_store, ticket_store)
+  local all_keys = cookie_store:get_keys(0)
+  for i, k in ipairs(all_keys) do
+    local _ticket, _ = cookie_store:get(k)
+    if _ticket == ticket then
+      cookie_store:delete(k)
       break
     end
   end

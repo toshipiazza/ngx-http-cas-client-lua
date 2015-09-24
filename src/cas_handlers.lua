@@ -88,9 +88,9 @@ end
 function validate_cookie(cookie)
   -- does the cookie exist in our store?
   if cookie_store:get(cookie) == nil then
-    -- the cookie was probably destroyed
-    -- by us in SLO previously anyway, so
-    -- we expire it immediately
+    -- the cookie was probably destroyed by us in SLO previously
+    -- so we expire it immediately. Otherwise the client hits
+    -- an infinite loop if the invalid cookie still exists.
     local cookie = ck:new()
     cookie:set({
       key=cookie_name,

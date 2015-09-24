@@ -38,26 +38,14 @@ many apps, with minimal integration overhead.
 
 # Limitations
 * For now, a CAS uri must exist within the nginx.conf, even if it's just a proxy-pass to the
-  real server. This necessarily means that the CAS server is accessible on the same hostname,
-  though not necessarily accessible to the public.
-  ```
-  # This endpoint must exist, optimally a proxy pass to the actual server
-  location /cas {
-    ...
-  }
-
-  location /client {
-    set $CAS_SERVICEREG "https://localhost/client";
-    set $CAS_HOSTNAME   "/CAS";
-    set $COOKIE_EXPIRY 7200; # defaults to 3600s=1 hour
-
-    lua_need_request_body on;
-    access_by_lua_file cas.lua;
-
-    ...
-  }
-  ```
+  real server. This necessarily means that the CAS server is accessible on the same hostname
+  (see example nginx.conf).
 * The CAS protocol only returns a "yes" or a "no". Traditionally a separate database is used
   for the idea of permissions. This module does not (yet) pass any XML file data to the
   application as if we used the /serviceValidate endpoint. Be a good user for now and use
   a separate database for permissions, etc.
+* The logout option for SLO takes a post request with some SAML in the body. However, it
+  might not be ideal to intercept all posts to the base url. It is thus advised to create
+  an endpoint in your app, such as /client/logout that is designated as the logout url. This
+  can be configured in the CAS server, so it does not continue to send post requests to the
+  base url yet still destroys the session for the nginx client.

@@ -110,9 +110,22 @@ function destroy_ticket(ticket)
   end
 end
 
+function destroy_cookie(cookie)
+  -- destroys cookie and ticket for logout
+  local assoc_ticket, _ = cookie_store:get(cookie)
+  if assoc_ticket ~= nil then
+    cookie_store:delete(cookie)
+    ticket_store:delete(assoc_ticket)
+  end
+end
+
 return {
   first_access = first_access;
   validate_with_CAS = validate_with_CAS;
   validate_cookie = validate_cookie;
+
   destroy_ticket = destroy_ticket;
+  destroy_cookie = destroy_cookie;
+
+  cookie_name = cookie_name;
 }

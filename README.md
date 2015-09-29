@@ -49,3 +49,5 @@ many apps, with minimal integration overhead.
   an endpoint in your app, such as /client/logout that is designated as the logout url. This
   can be configured in the CAS server, so it does not continue to send post requests to the
   base url yet still destroys the session for the nginx client.
+  * This /client/logout will also accept GET requests which uses direct browser interaction to
+    invalidate the client cookie and redirects to /cas/logout

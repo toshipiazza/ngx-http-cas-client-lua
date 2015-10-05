@@ -47,7 +47,8 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
   cookie:set({
     key=cookie_name,
     value=cookie_val,
-    max_age=max_age
+    max_age=max_age,
+    path=ngx.var.uri
   })
 
   return true

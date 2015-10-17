@@ -1,6 +1,5 @@
 local ck = require('resty.cookie')
 local cookie_store = ngx.shared[ngx.var.COOKIE_STORE]
-local ticket_store = ngx.shared[ngx.var.TICKET_STORE]
 
 local cookie_name = "NGXCAS"
 
@@ -16,7 +15,7 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
 
   -- place cookie into cookie store
   local success, err, forcible = cookie_store:add(
-    cookie_val, ticket_val, max_age)
+    cookie_val, true, max_age)
   if not success then
     if err == "no memory" then
       -- the add method will attempt to clear out all LRU entries
@@ -27,18 +26,6 @@ function set_cookie_and_store(max_age, cookie_val, ticket_val)
     elseif err == "exists" then
       -- we don't do anything, since this in itself has a very low
       -- probability of occurring (the user just has to log in again)
-      return false
-    end
-  end
-
-  -- analagous for placement of tickets
-  local success, err, forcible = ticket_store:add(
-    ticket_val, cookie_val, max_age)
-  if not success then
-    if err == "no memory" then
-      ngx.log(ngx.EMERG, "Ticket store is out of memory")
-      return false
-    elseif err == "exists" then
       return false
     end
   end
@@ -102,22 +89,9 @@ function validate_cookie(cookie)
   end
 end
 
-function destroy_ticket(ticket)
-  -- destroys cookie and ticket for SLO
-  local assoc_cookie, _ = ticket_store:get(ticket)
-  if assoc_cookie ~= nil then
-    cookie_store:delete(assoc_cookie)
-    ticket_store:delete(ticket)
-  end
-end
-
 function destroy_cookie(cookie)
-  -- destroys cookie and ticket for logout
-  local assoc_ticket, _ = cookie_store:get(cookie)
-  if assoc_ticket ~= nil then
-    cookie_store:delete(cookie)
-    ticket_store:delete(assoc_ticket)
-  end
+  -- destroys cookie for logout
+  cookie_store:delete(cookie)
 end
 
 return {
@@ -125,8 +99,5 @@ return {
   validate_with_CAS = validate_with_CAS;
   validate_cookie = validate_cookie;
 
-  destroy_ticket = destroy_ticket;
   destroy_cookie = destroy_cookie;
-
-  cookie_name = cookie_name;
 }
